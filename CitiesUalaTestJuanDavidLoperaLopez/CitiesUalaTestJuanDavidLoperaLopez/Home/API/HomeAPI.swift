@@ -39,6 +39,6 @@ final class HomeAPI: HomeAPIProtocol {
                 }
             }
             .receive(on: DispatchQueue.main)
-            .eraseToAnyPublisher()  
+            .eraseToAnyPublisher()
     }
 }
