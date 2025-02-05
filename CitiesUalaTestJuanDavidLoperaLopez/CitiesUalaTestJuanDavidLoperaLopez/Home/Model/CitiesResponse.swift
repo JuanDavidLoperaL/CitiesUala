@@ -10,7 +10,7 @@ import Foundation
 struct CitiesResponse: Decodable {
     let country: String
     let name: String
-    let id: String
+    let id: Int
     let coordinates: Coordinates
     
     enum CodingKeys: String, CodingKey {

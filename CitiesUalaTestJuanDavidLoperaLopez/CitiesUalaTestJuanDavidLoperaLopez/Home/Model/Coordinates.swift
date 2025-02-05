@@ -12,7 +12,7 @@ struct Coordinates: Decodable {
     let latitude: Double
     
     enum CodingKeys: String, CodingKey {
-        case longitude = "long"
+        case longitude = "lon"
         case latitude = "lat"
     }
 }
