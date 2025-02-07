@@ -10,6 +10,13 @@ import Foundation
 
 final class HomeViewModel: ObservableObject {
     
+    // MARK: - Enum
+    enum State {
+        case loading
+        case loaded
+        case error(title: String, subtitle: String)
+    }
+    
     // MARK: - Private Properties
     private let api: HomeAPIProtocol
     private var cancellable: AnyCancellable?
@@ -21,25 +28,27 @@ final class HomeViewModel: ObservableObject {
     
     // MARK: - Published
     @Published var cities: [CitiesResponse] = [CitiesResponse]()
-    @Published var isLoading: Bool = false
+    @Published var state: State = .loading
 }
 
 // MARK: - Internal Functions
 extension HomeViewModel {
     func getCities() {
-        isLoading = true
+        state = .loading
         cancellable = api.getCities()
             .sink { [weak self] completion in
-                self?.isLoading = false
                 switch completion {
                 case .finished:
-                    print("Success")
+                    self?.state = .loaded
                 case .failure(let error):
-                    print("Error: \(error)")
+                    self?.state = .error(title: "Error loading data", subtitle: "We got an unexpected error, please try again or contact support juandavidl2011.jdll@gmai.com")
                 }
             } receiveValue: { [weak self] citiesList in
-                print(citiesList)
-                self?.cities = citiesList
+                self?.cities = citiesList.sorted {
+                    let city1 = "\($0.name), \($0.country)"
+                    let city2 = "\($1.name), \($1.country)"
+                    return city1.localizedCompare(city2) == .orderedAscending
+                }
             }
     }
 }

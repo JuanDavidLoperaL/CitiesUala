@@ -7,10 +7,10 @@
 
 import Foundation
 
-struct CitiesResponse: Decodable {
-    let country: String
-    let name: String
+struct CitiesResponse: Decodable, Identifiable {
     let id: Int
+    let name: String
+    let country: String
     let coordinates: Coordinates
     
     enum CodingKeys: String, CodingKey {
