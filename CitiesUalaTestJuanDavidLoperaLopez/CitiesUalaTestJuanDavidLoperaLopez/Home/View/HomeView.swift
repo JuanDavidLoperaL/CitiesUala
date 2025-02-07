@@ -11,6 +11,7 @@ struct HomeView: View {
     
     // MARK: - Properties
     @ObservedObject var viewModel: HomeViewModel
+    @State private var searchText: String = ""
     
     // MARK: - Internal Init
     init(viewModel: HomeViewModel) {
@@ -20,6 +21,13 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             VStack {
+                TextField("Buscar ciudad...", text: $searchText)
+                    .padding()
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .onChange(of: searchText) { newValue in
+                        viewModel.filterBy(city: newValue)
+                    }
+                    .padding(.top)
                 switch viewModel.state {
                 case .loading:
                     ProgressView()
@@ -33,8 +41,8 @@ struct HomeView: View {
                 case .loaded:
                     ScrollView {
                         LazyVStack(alignment: .leading, spacing: 10) {
-                            ForEach(Array(viewModel.cities.enumerated()), id: \.element.id) { index, city in
-                                CityCell(viewModel: viewModel, index: index)
+                            ForEach(viewModel.cities, id: \.id) { city in
+                                CityCell(city: city)
                             }
                         }
                         .padding()
@@ -49,33 +57,6 @@ struct HomeView: View {
     }
 }
 
-struct CityCell: View {
-    
-    // MARK: - Properties
-    @StateObject var viewModel: HomeViewModel
-    
-    // MARK: - Private Properties
-    private let index: Int
-    
-    // MARK: - Internal Init
-    init(viewModel: HomeViewModel, index: Int) {
-        self._viewModel = StateObject(wrappedValue: viewModel)
-        self.index = index
-    }
-    
-    var body: some View {
-        VStack(alignment: .leading) {
-            Text("\(viewModel.cities[index].name), \(viewModel.cities[index].country.uppercased())")
-            Text("Latitud: \(viewModel.cities[index].coordinates.latitude) - Longitud: \(viewModel.cities[index].coordinates.longitude)")
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.horizontal)
-        .padding(.vertical, 5)
-        .background(Color.white)
-        .cornerRadius(5)
-        .shadow(radius: 2)
-    }
-}
 #Preview {
     HomeView(viewModel: HomeViewModel())
 }
