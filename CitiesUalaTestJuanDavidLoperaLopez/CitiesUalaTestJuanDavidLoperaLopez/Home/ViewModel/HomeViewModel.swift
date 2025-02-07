@@ -40,7 +40,7 @@ extension HomeViewModel {
                 switch completion {
                 case .finished:
                     self?.state = .loaded
-                case .failure(let error):
+                case .failure:
                     self?.state = .error(title: "Error loading data", subtitle: "We got an unexpected error, please try again or contact support juandavidl2011.jdll@gmai.com")
                 }
             } receiveValue: { [weak self] citiesList in
