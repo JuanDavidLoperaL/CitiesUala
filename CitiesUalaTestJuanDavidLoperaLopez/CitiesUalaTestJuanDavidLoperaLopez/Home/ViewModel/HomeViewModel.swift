@@ -20,6 +20,7 @@ final class HomeViewModel: ObservableObject {
     // MARK: - Private Properties
     private let api: HomeAPIProtocol
     private var cancellable: AnyCancellable?
+    private var originalCitiesList: [CitiesResponse] = [CitiesResponse]()
     
     // MARK: - Internal Init
     init(api: HomeAPIProtocol = HomeAPI()) {
@@ -44,11 +45,22 @@ extension HomeViewModel {
                     self?.state = .error(title: "Error loading data", subtitle: "We got an unexpected error, please try again or contact support juandavidl2011.jdll@gmai.com")
                 }
             } receiveValue: { [weak self] citiesList in
+                self?.originalCitiesList = citiesList
                 self?.cities = citiesList.sorted {
                     let city1 = "\($0.name), \($0.country)"
                     let city2 = "\($1.name), \($1.country)"
                     return city1.localizedCompare(city2) == .orderedAscending
                 }
             }
+    }
+    
+    func filterBy(city: String) {
+        if city.isEmpty {
+            cities = originalCitiesList
+        } else {
+            cities = originalCitiesList.filter({ cities in
+                return cities.name.lowercased().contains(city.lowercased())
+            })
+        }
     }
 }

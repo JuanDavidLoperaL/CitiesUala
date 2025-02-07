@@ -9,22 +9,19 @@ import SwiftUI
 
 struct CityCell: View {
     
-    // MARK: - Properties
-    @StateObject var viewModel: HomeViewModel
-    
     // MARK: - Private Properties
-    private let index: Int
+    private let city: CitiesResponse
     
     // MARK: - Internal Init
-    init(viewModel: HomeViewModel, index: Int) {
-        self._viewModel = StateObject(wrappedValue: viewModel)
-        self.index = index
+    init(city: CitiesResponse) {
+        self.city = city
     }
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text("\(viewModel.cities[index].name), \(viewModel.cities[index].country.uppercased())")
-            Text("Latitud: \(viewModel.cities[index].coordinates.latitude) - Longitud: \(viewModel.cities[index].coordinates.longitude)")
+            Text("\(city.name), \(city.country.uppercased())")
+            Text("Latitud: \(city.coordinates.latitude)")
+            Text("Longitud: \(city.coordinates.longitude)")
         }
         .frame(maxWidth: .infinity)
         .padding(.horizontal)
@@ -36,5 +33,5 @@ struct CityCell: View {
 }
 
 #Preview {
-    CityCell(viewModel: HomeViewModel(), index: 0)
+    CityCell(city: CitiesResponse(id: 0, name: "Medellin", country: "COL", coordinates: Coordinates(longitude: 1.0, latitude: 1.0)))
 }

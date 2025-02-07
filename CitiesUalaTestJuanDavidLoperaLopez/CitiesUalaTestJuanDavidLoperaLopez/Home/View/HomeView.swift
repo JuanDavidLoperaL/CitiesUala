@@ -11,6 +11,7 @@ struct HomeView: View {
     
     // MARK: - Properties
     @ObservedObject var viewModel: HomeViewModel
+    @State private var searchText: String = ""
     
     // MARK: - Internal Init
     init(viewModel: HomeViewModel) {
@@ -20,6 +21,13 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             VStack {
+                TextField("Buscar ciudad...", text: $searchText)
+                    .padding()
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .onChange(of: searchText) { newValue in
+                        viewModel.filterBy(city: newValue)
+                    }
+                    .padding(.top)
                 switch viewModel.state {
                 case .loading:
                     ProgressView()
@@ -33,8 +41,8 @@ struct HomeView: View {
                 case .loaded:
                     ScrollView {
                         LazyVStack(alignment: .leading, spacing: 10) {
-                            ForEach(Array(viewModel.cities.enumerated()), id: \.element.id) { index, city in
-                                CityCell(viewModel: viewModel, index: index)
+                            ForEach(viewModel.cities, id: \.id) { city in
+                                CityCell(city: city)
                             }
                         }
                         .padding()
