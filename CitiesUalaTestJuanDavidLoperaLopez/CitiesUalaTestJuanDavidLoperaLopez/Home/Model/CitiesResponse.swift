@@ -12,6 +12,7 @@ struct CitiesResponse: Decodable, Identifiable {
     let name: String
     let country: String
     let coordinates: Coordinates
+    var isFavorite: Bool = false
     
     enum CodingKeys: String, CodingKey {
         case country
