@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import SwiftData
 
 final class HomeViewModel: ObservableObject {
     
@@ -21,6 +22,7 @@ final class HomeViewModel: ObservableObject {
     private let api: HomeAPIProtocol
     private var cancellable: AnyCancellable?
     private var originalCitiesList: [CitiesResponse] = [CitiesResponse]()
+    private var favoriteCities: [City] = []
     
     // MARK: - Internal Init
     init(api: HomeAPIProtocol = HomeAPI()) {
@@ -45,12 +47,13 @@ extension HomeViewModel {
                     self?.state = .error(title: "Error loading data", subtitle: "We got an unexpected error, please try again or contact support juandavidl2011.jdll@gmai.com")
                 }
             } receiveValue: { [weak self] citiesList in
-                self?.originalCitiesList = citiesList
-                self?.cities = citiesList.sorted {
+                self?.originalCitiesList = citiesList.sorted {
                     let city1 = "\($0.name), \($0.country)"
                     let city2 = "\($1.name), \($1.country)"
                     return city1.localizedCompare(city2) == .orderedAscending
                 }
+                self?.loadFavoritesCities()
+                self?.cities = self?.originalCitiesList ?? []
             }
     }
     
@@ -61,6 +64,35 @@ extension HomeViewModel {
             cities = originalCitiesList.filter({ cities in
                 return cities.name.lowercased().contains(city.lowercased())
             })
+        }
+    }
+    
+    func toggleFavorite(for city: CitiesResponse, in modelContext: ModelContext, completionHandler: @escaping(_ index: Int) ->Void) {
+        var position: Int = 0
+        if let index = cities.firstIndex(where: { $0.id == city.id }) {
+            cities[index].isFavorite.toggle()
+        }
+        if let index = originalCitiesList.firstIndex(where: { $0.id == city.id }) {
+            originalCitiesList[index].isFavorite.toggle()
+            position = index
+        }
+        completionHandler(position)
+    }
+    
+    func set(favoritesCities: [City]) {
+        self.favoriteCities = favoritesCities
+    }
+}
+
+// MARK: - Private Functions
+private extension HomeViewModel {
+    func loadFavoritesCities() {
+        for (index, item) in originalCitiesList.enumerated() {
+            if favoriteCities.contains(where: { city in
+                return city.name == item.name
+            }) {
+                originalCitiesList[index].isFavorite = true
+            }
         }
     }
 }
