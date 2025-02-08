@@ -32,6 +32,7 @@ final class HomeViewModel: ObservableObject {
     // MARK: - Published
     @Published var cities: [CitiesResponse] = [CitiesResponse]()
     @Published var state: State = .loading
+    
 }
 
 // MARK: - Internal Functions
@@ -67,7 +68,7 @@ extension HomeViewModel {
         }
     }
     
-    func toggleFavorite(for city: CitiesResponse, in modelContext: ModelContext, completionHandler: @escaping(_ index: Int) ->Void) {
+    func toggleFavorite(for city: CitiesResponse, completionHandler: @escaping(_ index: Int) ->Void) {
         var position: Int = 0
         if let index = cities.firstIndex(where: { $0.id == city.id }) {
             cities[index].isFavorite.toggle()

@@ -35,7 +35,7 @@ struct CityCell: View {
             }
             Spacer()
             Button {
-                viewModel.toggleFavorite(for: city, in: modelContext, completionHandler: { index in
+                viewModel.toggleFavorite(for: city, completionHandler: { index in
                     if viewModel.cities[index].isFavorite {
                         let saveCity: City = City(id: city.id, name: city.name, country: city.country, isFavorite: city.isFavorite)
                         do {
